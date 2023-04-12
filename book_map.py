@@ -34,11 +34,14 @@ def summarize_and_map(file_path, map_size=5, min_chunk_len=3, max_chunk_len=5):
 
     mind_map = f'{html_code}\n'
     topics = defaultdict(list)
+    included_sentences = set()
     for sentence in summary:
         for phrase in sentence.noun_chunks:
             if min_chunk_len <= len(phrase) <= max_chunk_len:
                 topic = phrase.text.capitalize()
-                topics[topic].append(sentence)
+                if sentence not in included_sentences:
+                    topics[topic].append(sentence)
+                    included_sentences.add(sentence)
     for topic, sentences in topics.items():
         mind_map += f'<li><span class="topic">{topic}</span>\n<ul>\n'
         for sent in sentences:
@@ -51,6 +54,7 @@ def summarize_and_map(file_path, map_size=5, min_chunk_len=3, max_chunk_len=5):
     with open(f'{title}.html', 'w', encoding='utf-8') as f:
         f.write(mind_map)
     print(f'Mind map saved to {os.getcwd()}\\{title}.html')
+
 
 if __name__ == '__main__':
     file_path = input('Enter file path: ')
